@@ -1,88 +1,111 @@
-# \## Model Results (Regression)
+### Part A - Data Cleaning and Exploratory Data Analysis
 
-# 
+### 1. Data Cleaning
 
-# \### Baseline Model
+- Raw shipment records: 1,224
+- Duplicate rows removed: 24
+- Final cleaned records: 1,200
+- Delayed shipments: 278
+- Overall delay rate: 23.17%
 
-# \- Baseline RMSE: 18.86 hours
+The cleaning process included:
+- Removing duplicate records.
+- Standardizing service types.
+- Handling missing payment modes.
+- Converting declared values into numeric format.
+- Handling invalid dates and extreme parcel weights.
+- Filling missing numeric values using median imputation.
 
-# \- Baseline R²: -0.0212
+### 2. Feature Engineering
 
-# 
+Created 17 model features, including:
+- Promised delivery hours.
+- Distance and parcel weight.
+- Log-transformed declared value.
+- Number of stops.
+- Rain and sale-event indicators.
+- Weekend and dispatch-hour features.
+- Hub tier and daily capacity.
+- Five noise features.
 
-# \### Model Comparison
+No missing values remained in the 17 features and target after preprocessing.
 
-# \- Linear Regression RMSE: 4.891
+### 3. EDA Outputs
 
-# \- Decision Tree RMSE: 6.280
+The following analysis files were generated:
 
-# \- Random Forest RMSE: 5.468
+- outputs/part_a_checks.csv
+- outputs/part_a_correlations.csv
+- outputs/part_a_delay_by_group.csv
 
-# \- Gradient Boosting RMSE: 4.917
+These files contain data quality checks, feature correlations, and delay summaries by operational groups.
+### Model Results (Regression)
 
-# 
+### Baseline Model
 
-# Best validation model: Linear Regression.
+### Baseline RMSE: 18.86 hours
 
-# 
+### Baseline R²: -0.0212 
 
-# \### Decision Tree Analysis
+#### Model Comparison
 
-# \- Depth 1: High Bias (underfitting).
+### Linear Regression RMSE: 4.891
 
-# \- Unlimited depth: High Variance (overfitting).
+### Decision Tree RMSE: 6.280
 
-# \- Best depth: 6.
+### Random Forest RMSE: 5.468
 
-# 
+### Gradient Boosting RMSE: 4.917
 
-# \### Gradient Boosting Learning Rate
+### Best validation model: Linear Regression.
 
-# \- 0.01: R² = 0.713 (too slow).
+### Decision Tree Analysis
 
-# \- 0.1: R² = 0.931 (best).
+### Depth 1: High Bias (underfitting).
 
-# \- 1.0: R² = 0.844 (too aggressive).
+### Unlimited depth: High Variance (overfitting).
 
-# 
+### Best depth: 6.
 
-# \### Cross Validation
+### Gradient Boosting Learning Rate
 
-# \- Linear Regression Mean R²: 0.926
+### 0.01: R² = 0.713 (too slow).
 
-# \- Gradient Boosting Mean R²: 0.935
+### 0.1: R² = 0.931 (best).
 
-# 
+### 1.0: R² = 0.844 (too aggressive).
 
-# \### Final Test Results
+### Cross Validation
 
-# \- Selected Model: Linear Regression
+### Linear Regression Mean R²: 0.926
 
-# \- MAE: 3.567 hours
+### Gradient Boosting Mean R²: 0.935
 
-# \- RMSE: 4.524 hours
+### Final Test Results
 
-# \- R²: 0.949
+### Selected Model: Linear Regression
+
+### MAE: 3.567 hours
+
+### RMSE: 4.524 hours
+
+### R²: 0.949
+
+### Model Results (Classification)
+
+### 1. Baseline Model
+
+- Blind baseline accuracy: 0.7667 (76.67%).
+
+- The baseline predicts every shipment as on-time.
+
+- It fails to identify any delayed shipment (recall = 0).
+
+- Therefore, accuracy alone can be misleading for an imbalanced classification problem.
 
 
 
-\## Model Results (Classification)
-
-
-
-\### 1. Baseline Model
-
-\- Blind baseline accuracy: 0.7667 (76.67%).
-
-\- The baseline predicts every shipment as on-time.
-
-\- It fails to identify any delayed shipment (recall = 0).
-
-\- Therefore, accuracy alone can be misleading for an imbalanced classification problem.
-
-
-
-\### 2. Classifier Comparison
+### 2. Classifier Comparison
 
 
 
@@ -456,13 +479,13 @@ The operations team should monitor these quantities weekly:
 
 
 
-1\. Actual delay rate above 30% should trigger an operational review.
+1. Actual delay rate above 30% should trigger an operational review.
 
-2\. Model recall below 0.75 on matured shipments should trigger investigation.
+2. Model recall below 0.75 on matured shipments should trigger investigation.
 
-3\. Mean shipment distance changing by more than 20% from the training baseline should trigger a data drift review.
+3. Mean shipment distance changing by more than 20% from the training baseline should trigger a data drift review.
 
-4\. Missing or invalid feature values above 5% should trigger a data quality investigation.
+4. Missing or invalid feature values above 5% should trigger a data quality investigation.
 
 
 
@@ -470,37 +493,37 @@ These are proposed operational alert thresholds and should be reviewed after col
 
 
 
-\#### Retraining schedule
+#### Retraining schedule
 
 
 
-\- Retrain the model quarterly.
+- Retrain the model quarterly.
 
-\- Retrain earlier after major changes in hub operations, delivery routes, or service policies.
+- Retrain earlier after major changes in hub operations, delivery routes, or service policies.
 
-\- Compare sale-event performance during 15–28 September with a comparable sale-event period, rather than ordinary non-sale weeks.
+- Compare sale-event performance during 15–28 September with a comparable sale-event period, rather than ordinary non-sale weeks.
 
-\- Monitor changes in distance, number of stops, hub capacity, service type, and missing-value rates.
-
-
-
-\### 5. Limitations
+- Monitor changes in distance, number of stops, hub capacity, service type, and missing-value rates.
 
 
 
-1\. The project uses a limited synthetic dataset and may not represent real delivery operations.
-
-2\. The test set contains only 41 delayed shipments, so classification metrics may change with new data.
-
-3\. The selected alert threshold was evaluated on one validation split and may need recalibration in production.
-
-4\. Hub segments are based on historical aggregate profiles and may change when operating conditions change.
-
-5\. The model does not use live traffic, weather, or real-time hub workload information.
+### 5. Limitations
 
 
 
-\### 6. How to Run the Project
+1. The project uses a limited synthetic dataset and may not represent real delivery operations.
+
+2. The test set contains only 41 delayed shipments, so classification metrics may change with new data.
+
+3. The selected alert threshold was evaluated on one validation split and may need recalibration in production.
+
+4. Hub segments are based on historical aggregate profiles and may change when operating conditions change.
+
+5. The model does not use live traffic, weather, or real-time hub workload information.
+
+
+
+### 6. How to Run the Project
 
 
 
@@ -508,25 +531,18 @@ Clone the repository:
 
 
 
-```bash
+bash
 
 git clone https://github.com/rawatboy24/Delhivery-capstone-project.git
 
 cd Delhivery-capstone-project
 
-```
-
-
-
 Install the pinned dependencies:
 
-
-
-```bash
+bash
 
 pip install -r requirements.txt
 
-```
 
 
 
@@ -534,7 +550,7 @@ Run the project scripts in this order:
 
 
 
-```bash
+bash
 
 python generate\_data.py
 
