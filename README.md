@@ -115,13 +115,9 @@ These outputs contain data quality checks, feature correlations, and delay summa
 
 
 | Model | Accuracy | Precision | Recall | F1 |
-
 |---|---:|---:|---:|---:|
-
 | Logistic Regression | 0.9056 | 0.7778 | 0.8333 | 0.8046 |
-
-| Decision Tree (depth 6) | 0.8833 | 0.7561 | 0.7381 | 0.7470 |
-
+| Decision Tree | 0.8833 | 0.7561 | 0.7381 | 0.7470 |
 | Random Forest | 0.9056 | 0.8378 | 0.7381 | 0.7848 |
 
 
@@ -130,19 +126,19 @@ Logistic Regression achieved the highest F1 score among the initial classifiers.
 
 
 
-\### 3. Feature Importance and Noise Features
+### 3. Feature Importance and Noise Features
 
-\- The top 7 features by F-score are distance\_km, hub\_tier, hub\_daily\_capacity, n\_stops, promised\_hours, rain\_flag, and sale\_event\_flag.
+- The top 7 features by F-score are distance\_km, hub\_tier, hub\_daily\_capacity, n\_stops, promised\_hours, rain\_flag, and sale\_event\_flag.
 
-\- All five noise features are outside the top 7 F-score rankings.
+- All five noise features are outside the top 7 F-score rankings.
 
-\- Combined Random Forest importance of the five noise features: 0.225 (22.5%).
+- Combined Random Forest importance of the five noise features: 0.225 (22.5%).
 
-\- This indicates that the noise features still contribute some importance to the Random Forest model.
+- This indicates that the noise features still contribute some importance to the Random Forest model.
 
 
 
-\### 4. SelectKBest Results
+### 4. SelectKBest Results
 
 
 
@@ -160,13 +156,9 @@ Logistic Regression achieved the highest F1 score among the initial classifiers.
 
 | 17 | 0.7848 |
 
-
-
 The best result was achieved with k=7 features. Therefore, 7 features were selected for tuning and the final model.
 
-
-
-\### 5. Hyperparameter Tuning
+### 5. Hyperparameter Tuning
 
 
 
@@ -190,15 +182,15 @@ Validation results are based on 180 rows, so small differences may be affected b
 
 
 
-\### 6. Alert Threshold Selection
+### 6. Alert Threshold Selection
 
-\- Selected threshold: 0.5.
+- Selected threshold: 0.5.
 
-\- Validation precision: 0.7955.
+- Validation precision: 0.7955.
 
-\- Validation recall: 0.8333.
+- Validation recall: 0.8333.
 
-\- Validation F1: 0.8140.
+- Validation F1: 0.8140.
 
 
 
@@ -210,17 +202,17 @@ A lower threshold catches more delayed shipments but creates more false alerts. 
 
 
 
-\### 7. Final Test Results
+### 7. Final Test Results
 
-\- Selected model: Random Forest with SelectKBest (k=7).
+- Selected model: Random Forest with SelectKBest (k=7).
 
-\- Number of trees: 100.
+- Number of trees: 100.
 
-\- Maximum depth: Unlimited.
+- Maximum depth: Unlimited.
 
-\- Minimum samples per leaf: 1.
+- Minimum samples per leaf: 1.
 
-\- Alert threshold: 0.5.
+- Alert threshold: 0.5.
 
 
 
@@ -250,11 +242,11 @@ The test set was used only for the final evaluation and not for model tuning.
 
 &#x20;
 
-\## Part D - Hub Segments, Packaging and Operations Playbook
+## Part D - Hub Segments, Packaging and Operations Playbook
 
 
 
-\### 1. Hub Segmentation
+### 1. Hub Segmentation
 
 
 
@@ -266,7 +258,7 @@ KMeans clustering was performed using StandardScaler with K=3, random\_state=42,
 
 
 
-\#### Cluster separation comparison
+#### Cluster separation comparison
 
 
 
@@ -288,7 +280,7 @@ K=3 was selected because it provides three practical operational groups without 
 
 
 
-\#### Segment profiles
+#### Segment profiles
 
 
 
@@ -304,7 +296,7 @@ K=3 was selected because it provides three practical operational groups without 
 
 
 
-\#### Tier and segment mismatches
+#### Tier and segment mismatches
 
 
 
@@ -330,7 +322,7 @@ These mismatches show that hub tier alone does not describe actual operational d
 
 
 
-\### 2. Model Packaging and Prediction
+### 2. Model Packaging and Prediction
 
 
 
@@ -342,11 +334,11 @@ Additional files:
 
 
 
-\- `models/delay\_threshold.csv`
+- models/delay\_threshold.csv
 
-\- `models/feature\_order.csv`
+- models/feature\_order.csv
 
-\- `models/impute\_values.csv`
+- models/impute\_values.csv
 
 
 
@@ -378,7 +370,7 @@ The prediction script processes 48 new shipments and writes `outputs/new\_shipme
 
 
 
-\#### New shipment prediction results
+#### New shipment prediction results
 
 
 
@@ -404,7 +396,7 @@ The CSV was generated twice and both SHA256 hashes matched, confirming determini
 
 
 
-\### 3. Operations Recommendation
+### 3. Operations Recommendation
 
 
 
@@ -412,23 +404,23 @@ The nine Escalate hubs should receive priority operational attention:
 
 
 
-\- HUB13 - Nagpur
+- HUB13 - Nagpur
 
-\- HUB15 - Kochi
+- HUB15 - Kochi
 
-\- HUB17 - Patna
+- HUB17 - Patna
 
-\- HUB18 - Ranchi
+- HUB18 - Ranchi
 
-\- HUB19 - Guwahati
+- HUB19 - Guwahati
 
-\- HUB20 - Raipur
+- HUB20 - Raipur
 
-\- HUB21 - Bhubaneswar
+- HUB21 - Bhubaneswar
 
-\- HUB23 - Siliguri
+- HUB23 - Siliguri
 
-\- HUB24 - Agartala
+- HUB24 - Agartala
 
 
 
@@ -440,9 +432,9 @@ The alert threshold is 0.5. On the Part C test set:
 
 
 
-\- Precision = 0.6889. Approximately 6.9 out of every 10 flagged shipments were actually delayed.
+- Precision = 0.6889. Approximately 6.9 out of every 10 flagged shipments were actually delayed.
 
-\- Recall = 0.7561. Approximately 7.6 out of every 10 delayed shipments were identified.
+- Recall = 0.7561. Approximately 7.6 out of every 10 delayed shipments were identified.
 
 
 
@@ -454,7 +446,7 @@ The four tier/segment mismatches should be reviewed before making permanent hub 
 
 
 
-\### 4. Production Plan
+### 4. Production Plan
 
 
 
@@ -462,21 +454,21 @@ The four tier/segment mismatches should be reviewed before making permanent hub 
 
 |---|---|
 
-| Accuracy | `outputs/part\_c\_final\_test.csv` stores final classification metrics. |
+| Accuracy | outputs/part\_c\_final\_test.csv stores final classification metrics. |
 
-| Reliability | `outputs/part\_d\_reload\_check.csv` verifies saved model predictions. |
+| Reliability | outputs/part\_d\_reload\_check.csv` verifies saved model predictions. |
 
 | Reproducibility | Fixed random\_state=42 and deterministic prediction output. |
 
-| Maintainability | Shared preprocessing functions are stored in `src/shipment\_prep.py`. |
+| Maintainability | Shared preprocessing functions are stored in `src/shipment\_prep.py. |
 
-| Consistency | `feature\_order.csv` and `impute\_values.csv` preserve training preprocessing. |
+| Consistency | feature\_order.csv` and `impute\_values.csv` preserve training preprocessing. |
 
-| Monitorability | `outputs/new\_shipment\_actions.csv` records shipment-level predictions and actions. |
+| Monitorability | outputs/new\_shipment\_actions.csv` records shipment-level predictions and actions. |
 
 
 
-\#### Monitoring triggers
+#### Monitoring triggers
 
 
 
@@ -575,15 +567,15 @@ python predict\_delay.py
 
 
 
-The `package\_model.py` script regenerates `models/delay\_model.pkl` and the supporting model files.
+The package\_model.py` script regenerates `models/delay\_model.pkl` and the supporting model files.
 
 
 
-The committed pickle is intended to be loaded with the pinned scikit-learn version. If the installed version differs, regenerate the model by running `python package\_model.py`.
+The committed pickle is intended to be loaded with the pinned scikit-learn version. If the installed version differs, regenerate the model by running `python package\_model.py.
 
 
 
-On Windows, the `py` launcher can be used instead of `python`.
+On Windows, the py launcher can be used instead of `python`.
 
 
 
