@@ -1,24 +1,30 @@
-### Part A - Data Cleaning and Exploratory Data Analysis
+## Part A - Data Cleaning and Exploratory Data Analysis
 
-### 1. Data Cleaning
+### 1. Data Quality Checks
 
 - Raw shipment records: 1,224
-- Duplicate rows removed: 24
-- Final cleaned records: 1,200
+- Duplicate records identified: 24
+- Cleaned shipment records: 1,200
 - Delayed shipments: 278
 - Overall delay rate: 23.17%
+- Missing values: 0 in all 17 model features and target.
 
-The cleaning process included:
-- Removing duplicate records.
-- Standardizing service types.
-- Handling missing payment modes.
-- Converting declared values into numeric format.
-- Handling invalid dates and extreme parcel weights.
-- Filling missing numeric values using median imputation.
+### 2. Data Cleaning
 
-### 2. Feature Engineering
+The following preprocessing steps were performed:
 
-Created 17 model features, including:
+- Removed duplicate shipment records.
+- Standardized service type values.
+- Handled missing payment modes.
+- Converted declared values into numeric format.
+- Handled invalid dispatch dates.
+- Treated extreme parcel weights as missing values.
+- Applied median imputation to missing numeric values.
+
+### 3. Feature Engineering
+
+Created 17 features for machine learning, including:
+
 - Promised delivery hours.
 - Distance and parcel weight.
 - Log-transformed declared value.
@@ -28,17 +34,16 @@ Created 17 model features, including:
 - Hub tier and daily capacity.
 - Five noise features.
 
-No missing values remained in the 17 features and target after preprocessing.
+### 4. EDA Outputs
 
-### 3. EDA Outputs
+The following output files were generated:
 
-The following analysis files were generated:
+- `outputs/part_a_checks.csv
+- `outputs/part_a_correlations.csv
+- `outputs/part_a_delay_by_group.csv
 
-- outputs/part_a_checks.csv
-- outputs/part_a_correlations.csv
-- outputs/part_a_delay_by_group.csv
+These outputs contain data quality checks, feature correlations, and delay summaries across operational groups.
 
-These files contain data quality checks, feature correlations, and delay summaries by operational groups.
 ### Model Results (Regression)
 
 ### Baseline Model
