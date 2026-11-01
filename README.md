@@ -216,3 +216,353 @@ Test recall (0.7561) was lower than validation recall (0.8333). The test set con
 
 The test set was used only for the final evaluation and not for model tuning.
 
+
+
+
+
+&#x20;
+
+\## Part D - Hub Segments, Packaging and Operations Playbook
+
+
+
+\### 1. Hub Segmentation
+
+
+
+Hub profiles were created using shipment count, mean delivery hours, delay rate, mean distance, and mean number of stops.
+
+
+
+KMeans clustering was performed using StandardScaler with K=3, random\_state=42, and n\_init=10.
+
+
+
+\#### Cluster separation comparison
+
+
+
+| K | Separation Ratio | Cluster Sizes |
+
+|---:|---:|---|
+
+| 2 | 2.894 | 15, 9 |
+
+| 3 | 5.393 | 9, 8, 7 |
+
+| 4 | 6.305 | 8, 7, 5, 4 |
+
+| 5 | 6.887 | 8, 7, 4, 3, 2 |
+
+
+
+K=3 was selected because it provides three practical operational groups without creating very small clusters.
+
+
+
+\#### Segment profiles
+
+
+
+| Segment | Hubs | Mean Delivery Hours | Delay Rate | Mean Distance (km) | Mean Stops |
+
+|---|---:|---:|---:|---:|---:|
+
+| Standard | 7 | 47.24 | 0.0257 | 188.93 | 55.37 |
+
+| Watch | 8 | 56.81 | 0.1550 | 314.18 | 70.72 |
+
+| Escalate | 9 | 64.65 | 0.4600 | 470.48 | 84.34 |
+
+
+
+\#### Tier and segment mismatches
+
+
+
+The following four hubs have a mismatch between their assigned tier and operational segment:
+
+
+
+| Hub | City | Tier | Actual Segment |
+
+|---|---|---|---|
+
+| HUB07 | Kolkata | Tier1 | Watch |
+
+| HUB13 | Nagpur | Tier2 | Escalate |
+
+| HUB15 | Kochi | Tier2 | Escalate |
+
+| HUB22 | Dehradun | Tier3 | Watch |
+
+
+
+These mismatches show that hub tier alone does not describe actual operational delay risk.
+
+
+
+\### 2. Model Packaging and Prediction
+
+
+
+The final classification model is saved as `models/delay\_model.pkl`.
+
+
+
+Additional files:
+
+
+
+\- `models/delay\_threshold.csv`
+
+\- `models/feature\_order.csv`
+
+\- `models/impute\_values.csv`
+
+
+
+The model was rebuilt using the same stratified train/validation/test split as Part C.
+
+
+
+The reload verification produced:
+
+
+
+| Metric | Result |
+
+|---|---:|
+
+| Test rows scored | 180 |
+
+| Reload maximum probability difference | 0.0 |
+
+| Alert threshold | 0.5 |
+
+
+
+The saved model and in-memory model produced identical test probabilities.
+
+
+
+The prediction script processes 48 new shipments and writes `outputs/new\_shipment\_actions.csv`.
+
+
+
+\#### New shipment prediction results
+
+
+
+| Action | Shipments |
+
+|---|---:|
+
+| No action | 40 |
+
+| Escalate to hub manager | 6 |
+
+| Proactive customer call | 2 |
+
+| Total flagged | 8 |
+
+
+
+The prediction output contains 48 unique shipment IDs and zero missing values.
+
+
+
+The CSV was generated twice and both SHA256 hashes matched, confirming deterministic output.
+
+
+
+\### 3. Operations Recommendation
+
+
+
+The nine Escalate hubs should receive priority operational attention:
+
+
+
+\- HUB13 - Nagpur
+
+\- HUB15 - Kochi
+
+\- HUB17 - Patna
+
+\- HUB18 - Ranchi
+
+\- HUB19 - Guwahati
+
+\- HUB20 - Raipur
+
+\- HUB21 - Bhubaneswar
+
+\- HUB23 - Siliguri
+
+\- HUB24 - Agartala
+
+
+
+The segment-level delay rate for Escalate hubs is 46%.
+
+
+
+The alert threshold is 0.5. On the Part C test set:
+
+
+
+\- Precision = 0.6889. Approximately 6.9 out of every 10 flagged shipments were actually delayed.
+
+\- Recall = 0.7561. Approximately 7.6 out of every 10 delayed shipments were identified.
+
+
+
+Flagged shipments at Escalate hubs should be sent to the hub manager. Other flagged shipments should receive proactive customer calls.
+
+
+
+The four tier/segment mismatches should be reviewed before making permanent hub tier changes.
+
+
+
+\### 4. Production Plan
+
+
+
+| Production characteristic | Repository implementation |
+
+|---|---|
+
+| Accuracy | `outputs/part\_c\_final\_test.csv` stores final classification metrics. |
+
+| Reliability | `outputs/part\_d\_reload\_check.csv` verifies saved model predictions. |
+
+| Reproducibility | Fixed random\_state=42 and deterministic prediction output. |
+
+| Maintainability | Shared preprocessing functions are stored in `src/shipment\_prep.py`. |
+
+| Consistency | `feature\_order.csv` and `impute\_values.csv` preserve training preprocessing. |
+
+| Monitorability | `outputs/new\_shipment\_actions.csv` records shipment-level predictions and actions. |
+
+
+
+\#### Monitoring triggers
+
+
+
+The operations team should monitor these quantities weekly:
+
+
+
+1\. Actual delay rate above 30% should trigger an operational review.
+
+2\. Model recall below 0.75 on matured shipments should trigger investigation.
+
+3\. Mean shipment distance changing by more than 20% from the training baseline should trigger a data drift review.
+
+4\. Missing or invalid feature values above 5% should trigger a data quality investigation.
+
+
+
+These are proposed operational alert thresholds and should be reviewed after collecting real production data.
+
+
+
+\#### Retraining schedule
+
+
+
+\- Retrain the model quarterly.
+
+\- Retrain earlier after major changes in hub operations, delivery routes, or service policies.
+
+\- Compare sale-event performance during 15–28 September with a comparable sale-event period, rather than ordinary non-sale weeks.
+
+\- Monitor changes in distance, number of stops, hub capacity, service type, and missing-value rates.
+
+
+
+\### 5. Limitations
+
+
+
+1\. The project uses a limited synthetic dataset and may not represent real delivery operations.
+
+2\. The test set contains only 41 delayed shipments, so classification metrics may change with new data.
+
+3\. The selected alert threshold was evaluated on one validation split and may need recalibration in production.
+
+4\. Hub segments are based on historical aggregate profiles and may change when operating conditions change.
+
+5\. The model does not use live traffic, weather, or real-time hub workload information.
+
+
+
+\### 6. How to Run the Project
+
+
+
+Clone the repository:
+
+
+
+```bash
+
+git clone https://github.com/rawatboy24/Delhivery-capstone-project.git
+
+cd Delhivery-capstone-project
+
+```
+
+
+
+Install the pinned dependencies:
+
+
+
+```bash
+
+pip install -r requirements.txt
+
+```
+
+
+
+Run the project scripts in this order:
+
+
+
+```bash
+
+python generate\_data.py
+
+python part\_a\_clean\_eda.py
+
+python part\_b\_regression.py
+
+python part\_c\_classification.py
+
+python part\_d\_segments.py
+
+python package\_model.py
+
+python predict\_delay.py
+
+```
+
+
+
+The `package\_model.py` script regenerates `models/delay\_model.pkl` and the supporting model files.
+
+
+
+The committed pickle is intended to be loaded with the pinned scikit-learn version. If the installed version differs, regenerate the model by running `python package\_model.py`.
+
+
+
+On Windows, the `py` launcher can be used instead of `python`.
+
+
+
