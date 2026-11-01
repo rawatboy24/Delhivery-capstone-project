@@ -349,3 +349,7 @@ final_metrics.to_csv(
 print("\nFINAL TEST RESULTS")
 print("------------------")
 print(final_metrics.tail(1).round(3).to_string(index=False))
+
+import joblib
+
+joblib.dump(final_model, "models/final_model.pkl")
